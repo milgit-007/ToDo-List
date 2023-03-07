@@ -12,52 +12,50 @@ let popupInput;
 let popupAddBtn;
 let popupCloseBtn;
 
-const prepareDOMElements = () => {
-	toDoInput = document.querySelector('.todo-input');
-	errorInfo = document.querySelector('.error-info');
-	addBtn = document.querySelector('.btn-add');
-	ulList = document.querySelector('.todolist ul');
-
-	popup = document.querySelector('.popup');
-	popupInfo = document.querySelector('.popup-info');
-	popupInput = document.querySelector('.popup-input');
-	popupAddBtn = document.querySelector('.accept');
-	popupCloseBtn = document.querySelector('.cancel');
-};
-
-const addNewToDo = () => {
-	if (toDoInput.value !== '') {
-		liItem = document.createElement('li');
-		liItem.textContent = toDoInput.value;
-		createToolsArea();
-		ulList.append(liItem);
-
-		toDoInput.value = '';
-		errorInfo.textContent = '';
-	} else {
-		errorInfo.textContent = 'Wprowadź treść zadania!';
-		errorInfo.style.color = 'tomato';
-	}
-};
-
 const main = () => {
 	prepareDOMElements();
 	prepareDOMEvents();
 };
 
+const prepareDOMElements = () => {
+	toDoInput = document.querySelector('.todo-input');
+	errorInfo = document.querySelector('.error-info');
+	addBtn = document.querySelector('.btn-add');
+	ulList = document.querySelector('ul');
+	popup = document.querySelector('.popup');
+	popupInput = document.querySelector('.popup-input');
+	popupInfo = document.querySelector('.popup-info');
+	popupAddBtn = document.querySelector('.accept');
+	popupCloseBtn = document.querySelector('.cancel');
+};
+
 const prepareDOMEvents = () => {
-	addBtn.addEventListener('click', addNewToDo);
+	addBtn.addEventListener('click', add);
 	ulList.addEventListener('click', checkClick);
-	popupCloseBtn.addEventListener('click', popupClose);
-	popupAddBtn.addEventListener('click', changeToDoText);
-	toDoInput.addEventListener('keyup', enterKeyCheck);
+	popupCloseBtn.addEventListener('click', closeEdit);
+    popupAddBtn.addEventListener('click', changeTodo)
+    toDoInput.addEventListener('keyup', enterKey)
+};
+
+const add = () => {
+	if (toDoInput.value !== '') {
+		liItem = document.createElement('li');
+		liItem.textContent = toDoInput.value;
+		createToolsArea();
+
+		ulList.append(liItem);
+
+		toDoInput.value = '';
+		errorInfo.textContent = '';
+	} else {
+		errorInfo.textContent = 'Musisz podać treść zadania!';
+		errorInfo.style.color = 'tomato';
+	}
 };
 
 const createToolsArea = () => {
-	const toolsDiv = document.createElement('div');
-	toolsDiv.classList.add('tools');
-	liItem.append(toolsDiv);
-
+	const div = document.createElement('div');
+	div.classList.add('tools');
 	const completeBtn = document.createElement('button');
 	completeBtn.classList.add('complete');
 	completeBtn.innerHTML = '<i class="fas fa-check"></i>';
@@ -70,7 +68,8 @@ const createToolsArea = () => {
 	deleteBtn.classList.add('delete');
 	deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
 
-	toolsDiv.append(completeBtn, editBtn, deleteBtn);
+	div.append(completeBtn, editBtn, deleteBtn);
+	liItem.append(div);
 };
 
 const checkClick = e => {
@@ -78,45 +77,44 @@ const checkClick = e => {
 		e.target.closest('li').classList.toggle('completed');
 		e.target.classList.toggle('completed');
 	} else if (e.target.matches('.edit')) {
-		editToDo(e);
+        editToDo(e)
 	} else if (e.target.matches('.delete')) {
-		deleteToDo(e);
+		e.target.closest('li').remove();
 	}
 };
 
-const editToDo = e => {
-	todoToEdit = e.target.closest('li');
-	popupInput.value = todoToEdit.firstChild.textContent;
+const editToDo = (e) => {
+    
+    todoToEdit = e.target.closest('li')
+    popupInput.value = todoToEdit.firstChild.textContent
 	popup.style.display = 'flex';
+
+	
 };
 
-const popupClose = () => {
+const changeTodo = () => {
+    if(popupInput.value !== ''){
+        todoToEdit.firstChild.textContent = popupInput.value
+       popup.style.display = 'none'
+       popupInfo.textContent = ''
+    } else {
+        popupInfo.textContent = 'Podaj treść!'
+        const allli = ulList.querySelectorAll('li')
+        if(allli.length === 0 ) {
+            errorInfo.textContent = 'Brak zadań na liście'
+        }
+    }
+}
+
+const closeEdit = () => {
 	popup.style.display = 'none';
-	popupInfo.textContent = '';
+    popupInfo.textContent = ''
 };
 
-const changeToDoText = () => {
-	if (popupInput.value !== '') {
-		todoToEdit.firstChild.textContent = popupInput.value;
-		popup.style.display = 'none';
-		popupInfo.textContent = '';
-	} else {
-		popupInfo.textContent = 'Musisz podać treść zadania!';
-		popupInfo.style.color = 'tomato';
-	}
-};
-
-const deleteToDo = e => {
-	e.target.closest('li').remove();
-	if (ulList.childElementCount === 0) {
-		errorInfo.textContent = 'Brak zadań na liście.';
-	}
-};
-
-const enterKeyCheck = e => {
-	if (e.key === 'Enter') {
-		addNewToDo();
-	}
-};
+const enterKey = (e) => {
+    if (e.key === 'Enter') {
+        add()
+    }
+}
 
 document.addEventListener('DOMContentLoaded', main);
