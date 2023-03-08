@@ -61,7 +61,16 @@ h1 {
 
 .error-info {
 	margin-top: 20px;
-	color: var(--dark-green);
+}
+
+.error-tomato {
+	color: tomato;
+}
+
+.empty-list {
+	font-size: 18px;
+	color: var(--light-green);
+	font-weight: bold;
 }
 
 .btn-add {

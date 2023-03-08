@@ -1,11 +1,10 @@
-let toDoInput;
+let todoInput;
 let errorInfo;
 let addBtn;
 let ulList;
-let liItem;
-let deleteBtn;
+let newTask;
 
-let popup;
+let popupDiv;
 let popupInfo;
 let todoToEdit;
 let popupInput;
@@ -18,11 +17,11 @@ const main = () => {
 };
 
 const prepareDOMElements = () => {
-	toDoInput = document.querySelector('.todo-input');
+	todoInput = document.querySelector('.todo-input');
 	errorInfo = document.querySelector('.error-info');
 	addBtn = document.querySelector('.btn-add');
 	ulList = document.querySelector('ul');
-	popup = document.querySelector('.popup');
+	popupDiv = document.querySelector('.popup');
 	popupInput = document.querySelector('.popup-input');
 	popupInfo = document.querySelector('.popup-info');
 	popupAddBtn = document.querySelector('.accept');
@@ -30,32 +29,33 @@ const prepareDOMElements = () => {
 };
 
 const prepareDOMEvents = () => {
-	addBtn.addEventListener('click', add);
-	ulList.addEventListener('click', checkClick);
+	addBtn.addEventListener('click', addNewTask);
+	ulList.addEventListener('click', checkClickedElement);
 	popupCloseBtn.addEventListener('click', closeEdit);
-    popupAddBtn.addEventListener('click', changeTodo)
-    toDoInput.addEventListener('keyup', enterKey)
+	popupAddBtn.addEventListener('click', changeTodo);
+	todoInput.addEventListener('keyup', enterKey);
 };
 
-const add = () => {
-	if (toDoInput.value !== '') {
-		liItem = document.createElement('li');
-		liItem.textContent = toDoInput.value;
+const addNewTask = () => {
+	if (todoInput.value !== '') {
+		newTask = document.createElement('li');
+		newTask.textContent = todoInput.value;
 		createToolsArea();
 
-		ulList.append(liItem);
+		ulList.append(newTask);
 
-		toDoInput.value = '';
+		todoInput.value = '';
 		errorInfo.textContent = '';
 	} else {
 		errorInfo.textContent = 'Musisz podać treść zadania!';
-		errorInfo.style.color = 'tomato';
+		errorInfo.classList.remove('empty-list');
+		errorInfo.classList.add('error-tomato');
 	}
 };
 
 const createToolsArea = () => {
-	const div = document.createElement('div');
-	div.classList.add('tools');
+	const toolsDiv = document.createElement('div');
+	toolsDiv.classList.add('tools');
 	const completeBtn = document.createElement('button');
 	completeBtn.classList.add('complete');
 	completeBtn.innerHTML = '<i class="fas fa-check"></i>';
@@ -68,53 +68,55 @@ const createToolsArea = () => {
 	deleteBtn.classList.add('delete');
 	deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
 
-	div.append(completeBtn, editBtn, deleteBtn);
-	liItem.append(div);
+	toolsDiv.append(completeBtn, editBtn, deleteBtn);
+	newTask.append(toolsDiv);
 };
 
-const checkClick = e => {
+const checkClickedElement = e => {
 	if (e.target.matches('.complete')) {
 		e.target.closest('li').classList.toggle('completed');
 		e.target.classList.toggle('completed');
 	} else if (e.target.matches('.edit')) {
-        editToDo(e)
+		editToDo(e);
 	} else if (e.target.matches('.delete')) {
-		e.target.closest('li').remove();
+		deleteTodo(e);
 	}
 };
 
-const editToDo = (e) => {
-    
-    todoToEdit = e.target.closest('li')
-    popupInput.value = todoToEdit.firstChild.textContent
-	popup.style.display = 'flex';
-
-	
+const editToDo = e => {
+	todoToEdit = e.target.closest('li');
+	popupInput.value = todoToEdit.firstChild.textContent;
+	popupDiv.style.display = 'flex';
 };
 
 const changeTodo = () => {
-    if(popupInput.value !== ''){
-        todoToEdit.firstChild.textContent = popupInput.value
-       popup.style.display = 'none'
-       popupInfo.textContent = ''
-    } else {
-        popupInfo.textContent = 'Podaj treść!'
-        const allli = ulList.querySelectorAll('li')
-        if(allli.length === 0 ) {
-            errorInfo.textContent = 'Brak zadań na liście'
-        }
-    }
-}
-
-const closeEdit = () => {
-	popup.style.display = 'none';
-    popupInfo.textContent = ''
+	if (popupInput.value !== '') {
+		todoToEdit.firstChild.textContent = popupInput.value;
+		popupDiv.style.display = 'none';
+		popupInfo.textContent = '';
+	} else {
+		popupInfo.textContent = 'Podaj treść zadania!';
+		popupInfo.style.color = 'tomato';
+	}
 };
 
-const enterKey = (e) => {
-    if (e.key === 'Enter') {
-        add()
-    }
-}
+const closeEdit = () => {
+	popupDiv.style.display = 'none';
+	popupInfo.textContent = '';
+};
+
+const deleteTodo = e => {
+	e.target.closest('li').remove();
+	if (ulList.children.length === 0) {
+		errorInfo.textContent = 'Brak zadań na liście';
+		errorInfo.classList.add('empty-list');
+	}
+};
+
+const enterKey = e => {
+	if (e.key === 'Enter') {
+		addNewTask();
+	}
+};
 
 document.addEventListener('DOMContentLoaded', main);
