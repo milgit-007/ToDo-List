@@ -11,6 +11,10 @@ let popupInput;
 let popupAddBtn;
 let popupCloseBtn;
 
+const errorEmptyInputValue = 'Musisz podać treść zadania!';
+const infoEmptyList = 'Brak zadań na liście';
+const taskEdit = 'EDIT';
+
 const main = () => {
 	prepareDOMElements();
 	prepareDOMEvents();
@@ -47,9 +51,9 @@ const addNewTask = () => {
 		todoInput.value = '';
 		errorInfo.textContent = '';
 	} else {
-		errorInfo.textContent = 'Musisz podać treść zadania!';
+		errorInfo.textContent = errorEmptyInputValue;
 		errorInfo.classList.remove('empty-list');
-		errorInfo.classList.add('error-tomato');
+		errorInfo.classList.add('error-message');
 	}
 };
 
@@ -62,7 +66,7 @@ const createToolsArea = () => {
 
 	const editBtn = document.createElement('button');
 	editBtn.classList.add('edit');
-	editBtn.textContent = 'EDIT';
+	editBtn.textContent = taskEdit;
 
 	const deleteBtn = document.createElement('button');
 	deleteBtn.classList.add('delete');
@@ -95,8 +99,8 @@ const changeTodo = () => {
 		popupDiv.style.display = 'none';
 		popupInfo.textContent = '';
 	} else {
-		popupInfo.textContent = 'Podaj treść zadania!';
-		popupInfo.style.color = 'tomato';
+		popupInfo.textContent = errorEmptyInputValue;
+		popupInfo.classList.add('error-message');
 	}
 };
 
@@ -108,7 +112,7 @@ const closeEdit = () => {
 const deleteTodo = e => {
 	e.target.closest('li').remove();
 	if (ulList.children.length === 0) {
-		errorInfo.textContent = 'Brak zadań na liście';
+		errorInfo.textContent = infoEmptyList;
 		errorInfo.classList.add('empty-list');
 	}
 };
